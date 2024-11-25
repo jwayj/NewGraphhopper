@@ -15,6 +15,9 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
+
+//여기서 위치받고 호출하는거임 
+
 package com.graphhopper.resources;
 
 import com.fasterxml.jackson.databind.JsonNode;

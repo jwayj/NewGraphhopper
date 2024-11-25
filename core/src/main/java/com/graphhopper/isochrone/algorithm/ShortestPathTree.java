@@ -51,6 +51,8 @@ import static java.util.Comparator.comparingLong;
  * @author Peter Karich
  * @author Michael Zilske
  */
+
+
 public class ShortestPathTree extends AbstractRoutingAlgorithm {
 
     enum ExploreType {TIME, DISTANCE, WEIGHT}
@@ -130,6 +132,9 @@ public class ShortestPathTree extends AbstractRoutingAlgorithm {
         this.limit = limit;
         this.queueByZ = new PriorityQueue<>(1000, comparingDouble(l -> l.weight));
     }
+
+
+    // 수정해야하는 부분
 
     public void search(int from, final Consumer<IsoLabel> consumer) {
         checkAlreadyRun();

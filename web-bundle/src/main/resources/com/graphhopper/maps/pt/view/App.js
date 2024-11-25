@@ -38,6 +38,7 @@ export default class App extends React.Component {
             limitStreetTime: "PT30M",
             ignoreTransfers: false,
             timeOption: TimeOption.DEPARTURE,
+            distance : null, // 새로 추가한 부분
             routes: {
                 query: null,
                 isFetching: false
@@ -45,6 +46,23 @@ export default class App extends React.Component {
         };
         ParseQuery(this.state, new URL(window.location).searchParams);
     }
+
+    // handleDistanceChange = (distance) => {
+    //     this.setState({ distance }); // 거리 값을 상태로 저장
+    // };
+
+    handleDistanceChange = (distance) => {
+        this.setState({ distance }, () => {
+            console.log("Distance updated in App state:", this.state.distance);
+            this.updateQuery(); // 거리 값 변경 시 URL 생성
+        });
+    };
+
+    updateQuery = () => {
+        const queryUrl = CreateQuery("/route", this.state); // CreateQuery 함수 호출
+        console.log("Generated URL:", queryUrl);
+        window.history.replaceState(null, "", queryUrl); // URL 업데이트
+    };
 
     componentDidMount() {
         window.fetch("/info")
@@ -55,7 +73,7 @@ export default class App extends React.Component {
 
     componentDidUpdate(prevProps, prevState) {
         if (this.state.info !== null) { // Maybe better: Create a wrapper component that only renders this one when info is ready
-            if (this.state.from !== null && this.state.to !== null) { // The only ways our state would not correspond to a valid query
+            if (this.state.from !== null && this.state.to !== null && this.state.distance !==null&&this.state.distance !== prevState.distance) { // The only ways our state would not correspond to a valid query
                 let query = CreateQuery(new URL("/route", window.location), this.state);
                 let appQuery = CreateQuery(window.location, this.state);
                 if (this.state.routes.query !== query) {
@@ -124,7 +142,13 @@ export default class App extends React.Component {
             search: this.state,
             onSearchChange: e => this.setState(e),
             onSelectIndex: i => this.setState(prevState => ({routes: this._selectRoute(prevState.routes, i)}))
-        })), React.createElement("div", {
+        }),
+            React.createElement(Search, {
+            points: [this.state.from, this.state.to], // 출발지와 도착지 전달
+            map: null, // 현재는 null, 필요하면 수정
+            onDistanceChange: (distance) => this.handleDistanceChange(distance) // 거리 값 변경 핸들러 전달
+        })
+        ), React.createElement("div", {
             className: "map"
         }, React.createElement(Map, {
             info: this.state.info,

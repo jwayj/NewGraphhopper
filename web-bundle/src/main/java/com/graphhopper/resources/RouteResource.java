@@ -83,6 +83,9 @@ public class RouteResource {
             @QueryParam(WAY_POINT_MAX_DISTANCE) @DefaultValue("0.5") double minPathPrecision,
             @QueryParam(ELEVATION_WAY_POINT_MAX_DISTANCE) Double minPathElevationPrecision,
             @QueryParam("point") @NotNull List<GHPointParam> pointParams,
+            //새로 추가
+            @QueryParam("distance") @DefaultValue("0") double radius,
+            //새로 추가
             @QueryParam("type") @DefaultValue("json") String type,
             @QueryParam(INSTRUCTIONS) @DefaultValue("true") boolean instructions,
             @QueryParam(CALC_POINTS) @DefaultValue("true") boolean calcPoints,
@@ -109,7 +112,9 @@ public class RouteResource {
         if (enableElevation && !hasElevation)
             throw new IllegalArgumentException("Elevation not supported!");
 
-        GHRequest request = new GHRequest();
+       
+        GHRequest request = new GHRequest(); 
+        
         initHints(request.getHints(), uriInfo.getQueryParameters());
 
         if (minPathElevationPrecision != null)
@@ -248,4 +253,55 @@ public class RouteResource {
             }
         }
     }
+
+
+//     @POST
+// @Path("/route")
+// @Produces(MediaType.APPLICATION_JSON)
+// public Response calculateRoute(
+//         @QueryParam("point") List<String> points,
+//         @QueryParam("vehicle") @DefaultValue("foot") String vehicle,
+//         @QueryParam("locale") @DefaultValue("en") String locale,
+//         @QueryParam("distance") Double targetDistance // 원하는 거리 추가
+// ) {
+//     if (points.size() < 2) {
+//         throw new IllegalArgumentException("You need to provide at least two points!");
+//     }
+
+//     GHRequest request = new GHRequest();
+//     for (String point : points) {
+//         String[] coords = point.split(",");
+//         request.addPoint(new GHPoint(Double.parseDouble(coords[0]), Double.parseDouble(coords[1])));
+//     }
+
+//     request.setVehicle(vehicle);
+//     request.setLocale(locale);
+
+//     // GraphHopper 요청 처리
+//     GHResponse response = hopper.route(request);
+
+//     // 최단 경로 거리 확인
+//     double shortestDistance = response.getBest().getDistance();
+
+//     // 추가 경로 계산 (목표 거리와의 차이를 고려)
+//     if (targetDistance != null && targetDistance > shortestDistance) {
+//         // 커스텀 로직으로 원하는 거리에 가까운 경로를 생성
+//         response = calculateExtendedRoute(request, targetDistance, shortestDistance);
+//     }
+
+//     return Response.ok(response).build();
+// }
+
+// private GHResponse calculateExtendedRoute(GHRequest request, double Distance, double shortestDistance) {
+//     // 커스텀 로직: 경로를 우회하여 목표 거리로 조정
+//     // 예: AlternativeRoute 또는 CustomWeighting을 활용
+//     double scalingFactor = Distance / shortestDistance;
+
+//     CustomModel customModel = new CustomModel();
+//     customModel.addToPriority("roads", scalingFactor);
+
+//     request.setCustomModel(customModel);
+
+//     return hopper.route(request);
+// }
 }

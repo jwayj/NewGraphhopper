@@ -1,9 +1,9 @@
 graphhopper:
-
+  datareader.bbox: 32.0,43.0,123.0,132.0
   # OpenStreetMap input file PBF or XML, can be changed via command line -Ddw.graphhopper.datareader.file=some.pbf
-  datareader.file: ""
+  datareader.file: "" 
   # Local folder used by graphhopper to store its data
-  graph.location: graph-cache
+  graph.location: ./graph-cache
 
 
   ##### Routing Profiles ####
@@ -259,3 +259,6 @@ logging:
           currentLogFilename: logs/osm_warnings.log
           archive: false
           logFormat: '[%level] %msg%n'
+
+
+

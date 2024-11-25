@@ -28,6 +28,10 @@ const CreateQuery = (baseUrl, search) => {
     url.searchParams.set("pt.profile_duration", search.rangeQueryDuration);
     url.searchParams.set("pt.limit_street_time", search.limitStreetTime);
     url.searchParams.set("pt.ignore_transfers", search.ignoreTransfers);
+    //새로 추가한 부분
+    if (search.distance) {
+        url.searchParams.append("distance", search.distance); // 거리 값 추가
+    } //새로 추가한 부분
     return url.toString();
 };
 
@@ -63,6 +67,7 @@ const ParseQuery = (search, searchParams) => {
 
     parsePoints(searchParams);
     parseDepartureTime(searchParams);
+    parse("distance", "distance", searchParams); //새로 추가한거
     parse("pt.profile", "rangeQuery", searchParams);
     parse("pt.profile_duration", "rangeQueryDuration", searchParams);
     parse("pt.limit_street_time", "limitStreetTime", searchParams);
