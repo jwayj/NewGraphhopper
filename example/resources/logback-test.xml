@@ -5,9 +5,9 @@
         </encoder>
     </appender>
 
-    <logger name="com.graphhopper" level="info"/>
+    <logger name="com.graphhopper" level="debug"/>
 
-    <root level="warn">
+    <root level="debug">
         <appender-ref ref="STDOUT"/>
     </root>
 </configuration>

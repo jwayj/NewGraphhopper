@@ -1,0 +1,33 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "LineString",
+          "coordinates": [
+            [126.9779704135259, 37.566465879937105],
+            [126.9778241, 37.566464],
+            [126.9778258, 37.5664198]
+          ]
+        },
+        "properties": {
+          "edge_id": 231432
+        }
+      },
+      {
+        "type": "Feature",
+        "geometry": {
+          "type": "LineString",
+          "coordinates": [
+            [126.9778258, 37.5664198],
+            [126.9776458, 37.5664159]
+          ]
+        },
+        "properties": {
+          "edge_id": 231431
+        }
+      }
+    ]
+  }
+  

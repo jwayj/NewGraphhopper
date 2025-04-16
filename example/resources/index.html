@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <title>라우팅 비교 + 피드백</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+  <!-- ✅ Kakao 지도 SDK: 기본 방식 (defer 없이 사용) -->
+  <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=d1c16c3393f46b74308ba72d84d5f73e&libraries=services"></script>
+
+  <!-- ✅ Daum 주소 검색 -->
+  <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+
+  <style>
+    #map { width: 100%; height: 600px; }
+    #info, #legend { padding: 10px; background: #f8f8f8; margin-top: 10px; }
+    .legend-item { display: flex; align-items: center; margin-bottom: 5px; }
+    .legend-color { width: 20px; height: 20px; margin-right: 10px; }
+    #input input[type="text"] {
+      width: 300px; height: 30px; font-size: 18px; padding: 5px;
+    }
+    #input input[type="radio"] {
+      transform: scale(1.5); margin-right: 5px;
+    }
+    #input label, #input legend {
+      font-size: 25px;
+    }
+    #input input {
+      font-size: 25px; height: 40px;
+    }
+    .large-button {
+      width: 200px; height: 60px; font-size: 20px; color: black;
+      border: none; border-radius: 5px; cursor: pointer;
+    }
+  </style>
+</head>
+<script src="route-map.js"></script>
+<body>
+  <div id="input">
+    <label for="start-point">출발지:</label>
+    <input type="text" id="start-address" placeholder="주소">
+    <input type="button" id="start-search-btn" value="주소 검색"><br>
+    <div id="start-map" style="width:300px;height:300px;margin-top:10px;display:none"></div><br><br>
+
+    <label for="end-point">도착지:</label>
+    <input type="text" id="end-address" placeholder="주소">
+    <input type="button" id="end-search-btn" value="주소 검색"><br>
+    <div id="end-map" style="width:300px;height:300px;margin-top:10px;display:none"></div><br><br>
+
+    <label for="distance">거리 (km):</label>
+    <input type="text" id="distance" name="distance" placeholder="거리를 입력하세요"><br><br>
+
+    <fieldset>
+      <legend>경사:</legend>
+      <input type="radio" id="slope-low" name="slope" value="low">
+      <label for="slope-low">낮음</label>
+      <input type="radio" id="slope-medium" name="slope" value="medium">
+      <label for="slope-medium">보통</label>
+      <input type="radio" id="slope-high" name="slope" value="high">
+      <label for="slope-high">높음</label>
+    </fieldset><br><br>
+  </div>
+
+  <button class="large-button" onclick="sendData()">경로 탐색</button><br><br>
+
+  <div id="map"></div>
+  <div id="info"></div>
+  <div id="legend">
+    <h4>범례</h4>
+    <div class="legend-item"><div class="legend-color" style="background-color: blue;"></div><span>routingWithDesiredDistance 메서드</span></div>
+    <div class="legend-item"><div class="legend-color" style="background-color: red;"></div><span>routing 메서드</span></div>
+    <div class="legend-item"><div class="legend-color" style="background-color: green;"></div><span>routingWithCircle 메서드</span></div>
+    <p>선택한 구간은 노란색으로 표시됩니다</p>
+  </div>
+
+  <div style="margin: 10px;"><button id="feedbackBtn">🚀 사용자 피드백 보내기</button></div>
+
+  <script>
+    // Kakao 객체가 로드될 때까지 기다리기
+    function waitForKakao(callback) {
+      const interval = setInterval(() => {
+        if (window.kakao && kakao.maps && kakao.maps.services) {
+          clearInterval(interval);
+          callback();
+        }
+      }, 100);
+    }
+
+    function execDaumPostcode(addressId, mapId) {
+      new daum.Postcode({
+        oncomplete: function(data) {
+          const addr = data.address;
+          document.getElementById(addressId).value = addr;
+
+          waitForKakao(() => {
+            const mapContainer = document.getElementById(mapId);
+            const mapOption = {
+              center: new kakao.maps.LatLng(37.537187, 127.005476),
+              level: 5
+            };
+
+            const map = new kakao.maps.Map(mapContainer, mapOption);
+            const geocoder = new kakao.maps.services.Geocoder();
+            const marker = new kakao.maps.Marker({ map: map });
+
+            geocoder.addressSearch(addr, function(results, status) {
+              if (status === kakao.maps.services.Status.OK) {
+                const coords = new kakao.maps.LatLng(results[0].y, results[0].x);
+                mapContainer.style.display = "block";
+                map.relayout();
+                map.setCenter(coords);
+                marker.setPosition(coords);
+              }
+            });
+          });
+        }
+      }).open();
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("start-search-btn").addEventListener("click", () => {
+        execDaumPostcode("start-address", "start-map");
+      });
+      document.getElementById("end-search-btn").addEventListener("click", () => {
+        execDaumPostcode("end-address", "end-map");
+      });
+    });
+  </script>
+</body>
+</html>
